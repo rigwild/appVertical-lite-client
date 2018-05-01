@@ -1,5 +1,5 @@
 # vertical-video-grabber
-Grab https://appvertical.com/ videos as JSON. Sorted by series.
+Grab http://appvertical.com/ videos as JSON. Sorted by series.
 
 ## Running
 Change login details in getHomeVideos.php (A test account is already there).
