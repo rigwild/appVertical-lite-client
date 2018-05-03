@@ -29,6 +29,7 @@ $linkList = getPhpFromFile($cacheFile);
 	<meta name="keywords" content="app, vertical, appvertical, rigwild, github" />
 	<meta name="author" content="Antoine SAUVAGE - rigwild">
 
+	<link rel="icon" href="img/favicon.ico" />
 	<link rel="stylesheet" type="text/css" href="./css/style.css" />
 	<link rel="stylesheet" type="text/css" href="./font/Poppins/stylesheet.css" />
 	<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
@@ -44,7 +45,11 @@ $linkList = getPhpFromFile($cacheFile);
 				</a>
 			</span>
 		</h1>
-		<?php
+
+		<?php if (isset($_GET['error']) && !empty($_GET['error'])) {
+			echo "<h2 class='error'>Error ! ".htmlspecialchars($_GET['error'], ENT_QUOTES, 'utf-8')."</h2>";
+		}
+
 		foreach ($linkList["results"] as $keySer => $series) {
 			$seriesId = $series["_id"];
 			$seriesName = $series["name"];
@@ -62,7 +67,7 @@ $linkList = getPhpFromFile($cacheFile);
 						$videoId = $video["_id"];
 						$videoName = $video["name"];
 						$videoThumbnail = $video["images"]["thumbnail"]["url"];
-						echo "<a href='watch.php?id=$videoId' target='_blank'>
+						echo "<a href='watch.php?id=$videoId'>
 						<div class='overlay'></div>
 						<div class='overlayContent'>$videoName</div>
 						<img src='$videoThumbnail' />

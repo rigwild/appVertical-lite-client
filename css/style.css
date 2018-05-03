@@ -15,15 +15,23 @@ a {
 h1 {
 	font-size: 2em;
 }
+h2 {
+	font-size: 1.3em;
+	margin-top: 10px;
+}
 .rigwild {
 	font-size: 0.5em;
 }
+.error {
+	color: #ff7c7c;
+}
+
 
 .container {
 	padding: 0px;
 	width: 90%;
 	margin: 0 auto;
-	margin-top: 50px;
+	margin-top: 30px;
 }
 
 .center {
@@ -175,9 +183,14 @@ h1 {
 	h1 {
 		text-align: center;
 	}
+	.error {
+		margin-left: 20px;
+		margin-right: 5px;
+	}
 	.rigwild {
 		display: block;
 		font-size: 0.5em;
+		margin-bottom: 30px;
 	}
 	.goHomePage {
 		width: 100%;

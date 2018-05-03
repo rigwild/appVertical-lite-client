@@ -16,7 +16,7 @@ $videoData = getVideo($token, $watchId, true);
 
 /*If the server doesn't find the video, redirect to homepage*/
 if (isset($videoData['error']) && $videoData['error'] == 'Video not found') {
-	$msg = urlencode("The video id you specified does not exist.");
+	$msg = urlencode("The video you are looking for was not found on Vertical.");
 	header("Location: index.php?error=".$msg);
 }
 
@@ -47,6 +47,7 @@ $videoInfo["duration"] = (isset($videoData["time"])) ? gmdate("i:s", $videoData[
 	<meta name="keywords" content="app, vertical, appvertical, rigwild, github" />
 	<meta name="author" content="Antoine SAUVAGE - rigwild">
 
+	<link rel="icon" href="img/favicon.ico" />
 	<link rel="stylesheet" type="text/css" href="./css/style.css" />
 	<link rel="stylesheet" type="text/css" href="./font/Poppins/stylesheet.css" />
 	<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
