@@ -1,110 +1,106 @@
 <?php
 
-/*Requête GET avec cURL*/
-function grab_page($site){
+function login($username = "", $password = "", $getAllInfos = false) {
+	//login to appVertical and grab response
+	//if $getAllInfos = false -> return only the token
+	//if $getAllInfos = true  -> return full account data
+	$post = "{\"login\":\"$username\",\"password\":\"$password\"}";
+
+	if ($username == "" || $password = "") return null;	
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 40);
-	curl_setopt($ch, CURLOPT_HEADER, true);
-	curl_setopt($ch, CURLOPT_URL, $site);
-	ob_start();
-	return curl_exec ($ch);
-	ob_end_clean();
+	curl_setopt($ch, CURLOPT_URL, "https://api.appvertical.com/api/login/authenticate");
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+	$headers = array();
+	$headers[] = "Accept: application/json, text/plain, */*";
+	$headers[] = "Content-Type: application/json;charset=utf-8";
+	$headers[] = "Host: api.appvertical.com";
+	$headers[] = "User-Agent: okhttp/3.6.0";
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	$result = curl_exec($ch);
 	curl_close ($ch);
+	$result = json_decode($result, true);
+
+	if ($getAllInfos) return $result;
+	else return $result["token"];
 }
 
+function getHome($token = "") {
+	//grab appVertical homepage content
+	//return null if no token inserted
+	if ($token == "") return null;
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "https://api.appvertical.com/api/playlists?page=1&limit=5");
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+	curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+	$headers = array();
+	$headers[] = "Accept: application/json, text/plain, */*";
+	$headers[] = "X-Access-Token: ".$token;
+	$headers[] = "Host: api.appvertical.com";
+	$headers[] = "User-Agent: okhttp/3.6.0";
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	$result = curl_exec($ch);
+	curl_close ($ch);
+	return json_decode($result, true);
+}
 
-/*Retourne la donnée demandée en paramètre d'une date au format ISO 8601
-exemple : 20180524T083000Z
-https://en.wikipedia.org/wiki/ISO_8601
- */
-function convertDate($str = "", $type = "day", $timezone = "Europe/Paris") {
-	date_default_timezone_set($timezone);
+function getVideo($token = "", $videoId = "", $getAllInfos = false) {
+	//return the url of a video id
+	//if $getAllInfos = false -> return url only
+	//if $getAllInfos = true  -> return full video infos
+	if ($token == "" || $videoId == "") return null;
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, "https://api.appvertical.com/api/videos/".$videoId);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+	curl_setopt($ch, CURLOPT_ENCODING, 'gzip, deflate');
+	$headers = array();
+	$headers[] = "Accept: application/json, text/plain, */*";
+	$headers[] = "X-Access-Token: ".$token;
+	$headers[] = "Host: api.appvertical.com";
+	$headers[] = "User-Agent: okhttp/3.6.0";
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+	$result = curl_exec($ch);
+	curl_close ($ch);
+	$result = json_decode($result, true);
+	if ($getAllInfos) return $result;
+	else return $result["hdPath"];
+}
 
-	if ($type == "day")
-		$date = date("d-m-Y", strtotime($str));
-	elseif ($type == "hour")
-		$date = date("H\hi", strtotime($str));
-	elseif ($type == "timestamp")
-		$date = strtotime($str);
+function getHomeVideoData($token = "") {
+	//grab appVertical homepage content, get all videos by series
+	//grab name, url, description, thumbnail
+	//(Take some time because 1 request per video to get each url)
+	if ($token == "") return null;
+
+	$home = getHome($token);
+	$videoData = [];
+	foreach ($home["results"] as $key => $value) {
+		$seriesName = $value["name"];
+		$videoData[$seriesName] = [];
+		foreach ($home["results"][$key]["videos"] as $keyy => $valuee) {
+			$temp = getVideo($token, $valuee["_id"], true);
+
+			$videoInfo = [];
+			$videoInfo["id"] = dontReturnNull($temp["_id"]);
+			$videoInfo["name"] = dontReturnNull($temp["name"]);
+			$videoInfo["description"] = dontReturnNull($temp["description"]);
+			$videoInfo["thumbnail"] = dontReturnNull($temp["images"]["large"]["url"]);
+			$videoInfo["url"] = dontReturnNull($temp["hdPath"]);
+			array_push($videoData[$seriesName], $videoInfo);
+		}
+	}
+	return $videoData;
+}
+
+/*Return if the content is null or not*/
+function dontReturnNull($data) {
+	if ($data == null)
+		return "";
 	else
-		$date = "";
-
-	return $date;
+		return $data;
 }
-
-
-/*Extrait les données d'un fichier .ICS*/ 
-function extractData($str = "") {
-	$data = [];
-
-	/*Date de début du cours*/
-	preg_match("/DTSTART\:(.*?)\\n/", $str, $x);
-	$data["coursDate"] = convertDate($x[1], "day");
-	$data["coursDebut"] = convertDate($x[1], "hour");
-
-	/*Date de fin du cours*/
-	preg_match("/DTEND\:(.*?)\\n/", $str, $x);
-	$data["coursFin"] = convertDate($x[1], "hour");
-
-	/*Nom du cours*/
-	preg_match("/SUMMARY\:(.*?)\\n/", $str, $x);
-	$data["coursNom"] = $x[1];
-
-	/*Lieu du cours*/
-	preg_match("/LOCATION\:(.*?)\\n/", $str, $x);
-	$data["coursSalle"] = $x[1];
-
-	/*Groupe de TD/TP du cours*/
-	preg_match('/DESCRIPTION\:(.*?)\\n/', $str, $x);
-	$x = explode('\n', $x[0]);
-	$data["coursGroupe"] = $x[1];
-
-	/*Gère si il n'y a pas de professeur*/
-	if (!preg_match("/Export/", $x[2]))
-		$data["coursProf"] = $x[2];
-	else
-		$data["coursProf"] ="";
-	
-	return $data;
-}
-
-
-/*Récupère le planning, fonction principale*/
-function getPlanningIut($url, $type = "jsonIndent") {
-	/*
-	$type = "array"			<- Retourne tableau des plannings format tableau PHP
-	$type = "json"			<- Retourne tableau des plannings format json
-	$type = "jsonIndent"	<- Retourne tableau des plannings format json lisible
-	*/
-
-	$planning = [];
-	
-	$result = grab_page($url);
-
-	preg_match_all("/BEGIN:VEVENT[\s\S]*?END:VEVENT/", $result, $extract);
-
-	foreach ($extract[0] as $key => $value) {
-		$data = extractData($value);
-		array_push($planning, $data);
-	}
-
-	if ($type == "array") {
-		return $planning;
-	}
-	elseif ($type == "json") {
-		return json_encode($planning);
-	}
-	elseif ($type == "jsonIndent") {
-		return json_encode($planning, JSON_PRETTY_PRINT);
-	}
-	return $planning;
-}
-
-/*Enregistrer dans un fichier*/
-function saveToFile($fileName, $data) {
-	file_put_contents($fileName, $data);
-}
-
 ?>
