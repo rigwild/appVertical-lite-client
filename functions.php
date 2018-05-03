@@ -1,5 +1,9 @@
 <?php
 
+/*Login details to change.*/
+$username = "testazerty";
+$password = "testazerty";
+
 /*
 login to appVertical and grab response
 if $getAllInfos = false -> return only the token

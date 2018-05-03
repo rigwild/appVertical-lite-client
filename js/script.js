@@ -1,4 +1,5 @@
 $(document).ready(function() {
+
 	var fadeTitle = false;
 	var fadeTime = 200;
 
