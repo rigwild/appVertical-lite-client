@@ -25,8 +25,10 @@ You can test it live here : [https://github.asauvage.fr/vertical/](https://githu
 
 ## Screenshots
 Mobile view :
+
 ![Homepage and video viewer](https://github.asauvage.fr/img/vertical/1.jpg)
 
 Computer view :
+
 ![Homepage](https://github.asauvage.fr/img/vertical/2.jpg)
 ![Video viewer](https://github.asauvage.fr/img/vertical/3.jpg)
