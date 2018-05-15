@@ -46,6 +46,11 @@ const reqLogin = (vusername, vpassword) => {
 const reqGetHome = authToken => {
 	if (!authToken)
 		return
+
+	const videos = sessionStorage.getItem("videos")
+	if (videos && videos !== "")
+		return new Promise(res => res(JSON.parse(videos)))
+
 	const headersParam = {
 		"X-Access-Token": authToken
 	}
@@ -59,6 +64,15 @@ const reqGetAllVideos = authToken => {
 		"X-Access-Token": authToken
 	}
 	return reqAPI("videos?limit=9999999", "GET", null, headersParam)
+}
+
+const reqGetVideoById = (authToken, videoId) => {
+	if (!authToken)
+		return
+	const headersParam = {
+		"X-Access-Token": authToken
+	}
+	return reqAPI("videos/" + videoId, "GET", null, headersParam)
 }
 
 
@@ -91,7 +105,12 @@ const setupGetSeries = (vusername, vpassword) => {
 					sessionStorage.clear()
 					return null
 				})
-				.then(res => setSeriesToPage(res.results))
+				.then(res => {
+					log(res)
+					if (!sessionStorage.getItem("videos"))
+						sessionStorage.setItem("videos", JSON.stringify(res))
+					setSeriesToPage(res.results)
+				})
 		})
 }
 
@@ -115,6 +134,49 @@ const setupGetVideos = (vusername, vpassword) => {
 }
 
 
+const setupGetWatch = (vusername, vpassword) => {
+	reqLogin(vusername, vpassword)
+		.catch(e => {
+			log(e)
+			$("#seriesLocation").html("Error ! Cant't log in. The access token cache has been reloaded.<br>Try to refresh the page.")
+			sessionStorage.clear()
+			return null
+		})
+		.then(res => {
+			if (!res)
+				return
+			let authToken
+			if (typeof res !== 'string') {
+				authToken = res.token
+				sessionStorage.setItem("token", res.token)
+			} else {
+				authToken = res
+			}
+			$("#seriesLocation").html("Fetching the video from Vertical servers ...")
+			let url = new URL(location.href)
+			let videoId = url.searchParams.get("id")
+			reqGetVideoById(authToken, videoId)
+				.catch(e => {
+					log(e)
+					$("#seriesLocation").html("Error ! Can't fetch the videos. Try to reload the page. If it still doesn't work post an issue on the Github page.")
+					sessionStorage.clear()
+					return null
+				})
+				.then(res => setVideoToPage(res))
+		})
+}
+
+const setVideoToPage = video => {
+	$(".watchTitle").html(video.name)
+	$("#watchThumbnailImg").attr("src", video.images.large.url)
+	$("#author").html(video.user.username)
+	$("#duration").html(Math.floor(video.time / 60) + video.time % 60)
+	$("#likesCount").html(video.likes)
+	$("#commentsCount").html(video.commentsCount)
+	$("#description").html(video.description)
+	$("#video").attr("src", video.hdPath)
+	$("#player")[0].load()
+}
 
 
 const setSeriesToPage = series => {
@@ -135,7 +197,6 @@ const setSeriesToPage = series => {
 	})
 	initVideoStyle()
 }
-
 
 
 

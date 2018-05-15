@@ -5,7 +5,22 @@ Nothing is hosted on your web server, you just retrieve data remotely from Verti
 
 I will probably add the homepage cache soon (Save links to not reload everytime).
 
-## Configuration
+## Configuration : Javascript (v.2)
+Mody these lines in script.js with your account details. A test account is already there, please don't change its password.
+```
+/*Login details to change*/
+const user = "testazerty"
+const pass = "testazerty"
+```
+You are good to go. In this new Javascript version, the access token and the home page videos are stored in cache (Session Storage) so it can be very quick to load.
+Keep in mind that Cross Origin Policy prevents Javascript to load external content. That's why i'm using CORS Anywhere, a NodeJS proxy, so you don't have anything to install. If you want to run your own instance of CORS Anywhere, alter this line with your server's details.
+```
+//Bypass Cross Origin Policy
+const corsProxy = "https://cors-anywhere.herokuapp.com/"
+```
+You can find CORS Anywhere Github repository here : [https://github.com/Rob--W/cors-anywhere] https://github.com/Rob--W/cors-anywhere
+
+## Configuration : PHP (v.1)
 Upload all files on a webserver with **PHP** and **php-curl** installed. *I only tested it on PHP 7.2 though.*
 Just run these commands to install everything you need :
 
@@ -21,7 +36,7 @@ Change login details in **functions.php** (A test account is already there, don'
     $password = "testazerty";
 
 ## Demo
-You can test it live here : [https://github.asauvage.fr/vertical/](https://github.asauvage.fr/vertical/)
+You can test it live here (The new JS version !) : [https://github.asauvage.fr/vertical/](https://github.asauvage.fr/vertical/)
 
 ## Screenshots
 Mobile view :
