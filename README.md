@@ -18,7 +18,7 @@ Keep in mind that Cross Origin Policy prevents Javascript to load external conte
 //Bypass Cross Origin Policy
 const corsProxy = "https://cors-anywhere.herokuapp.com/"
 ```
-You can find CORS Anywhere Github repository here : [https://github.com/Rob--W/cors-anywhere] https://github.com/Rob--W/cors-anywhere
+You can find CORS Anywhere Github repository here : [https://github.com/Rob--W/cors-anywhere](https://github.com/Rob--W/cors-anywhere)
 
 ## Configuration : PHP (v.1)
 Upload all files on a webserver with **PHP** and **php-curl** installed. *I only tested it on PHP 7.2 though.*
