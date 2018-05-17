@@ -3,8 +3,6 @@ This is a web lite client for the french application "**Vertical**". It's a serv
 This means that you don't need to download the application and you can watch their videos on your computer or mobile phone. It's responsive.
 Nothing is hosted on your web server, you just retrieve data remotely from Vertical servers.
 
-I will probably add the homepage cache soon (Save links to not reload everytime).
-
 ## Configuration : Javascript (v.2)
 Mody these lines in script.js with your account details. A test account is already there, please don't change its password.
 ```
@@ -18,7 +16,8 @@ Keep in mind that Cross Origin Policy prevents Javascript to load external conte
 //Bypass Cross Origin Policy
 const corsProxy = "https://cors-anywhere.herokuapp.com/"
 ```
-You can find CORS Anywhere Github repository here : [https://github.com/Rob--W/cors-anywhere](https://github.com/Rob--W/cors-anywhere)
+You can find CORS Anywhere Github repository here : [https://github.com/Rob--W/cors-anywhere](https://github.com/Rob--W/cors-anywhere).
+When you login, your access token and the home page videos are cached, so it can load faster.
 
 ## Configuration : PHP (v.1)
 Upload all files on a webserver with **PHP** and **php-curl** installed. *I only tested it on PHP 7.2 though.*
