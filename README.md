@@ -1,9 +1,11 @@
-# appVertical-lite-client
+# appVertical-lite-client-PHP
 This is a web lite client for the french application "**Vertical**". It's a service which provide application exclusive videos. I sniffed packets coming in and out of the application to understand how the API works and how to replicate the application requests.
 This means that you don't need to download the application and you can watch their videos on your computer or mobile phone. It's responsive.
 Nothing is hosted on your web server, you just retrieve data remotely from Vertical servers.
 
 I will probably add the homepage cache soon (Save links to not reload everytime).
+
+You can find a full Javascript version here : [https://github.com/rigwild/appVertical-lite-client-JS](https://github.com/rigwild/appVertical-lite-client-JS)
 
 ## Configuration
 Upload all files on a webserver with **PHP** and **php-curl** installed. *I only tested it on PHP 7.2 though.*
