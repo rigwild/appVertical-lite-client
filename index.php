@@ -40,7 +40,7 @@ $linkList = getPhpFromFile($cacheFile);
 		<h1>
 			Vertical Lite client
 			<span class="rigwild"> by rigwild -
-				<a href="https://github.com/rigwild/appVertical-lite-client" target="_blank">
+				<a href="https://github.com/rigwild/appVertical-lite-client-PHP" target="_blank">
 					Github
 				</a>
 			</span>
